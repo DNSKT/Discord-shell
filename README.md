@@ -10,3 +10,7 @@ $ sudo apt install python3-pip
 $ sudo pip3 install -r requirements.txt
 $ python3 DiscordShell.py
 ```
+# TOS:
+ ```yaml
+ - this project was created for ETHICAL purpose.
+```
