@@ -17,7 +17,6 @@ Available commands are:
 /sysinfo - returns system information (e.g., 'uname -a', public IP address, etc.)
 /whoami - returns the current logged in user
 /download - downloads a remote file from the server
-/upload - NOT IMPLEMENTED. Use Telegram's functionality for this purpose.
 /kill - Kills the backdoor.
 /help - This help message.
 """
