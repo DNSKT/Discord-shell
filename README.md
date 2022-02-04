@@ -1,2 +1,2 @@
 # Discord-shell
-yes
+reverse shell on discord bot (STILL IN DEVELPMENT)
