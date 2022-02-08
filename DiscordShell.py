@@ -372,7 +372,7 @@ def Auth(url):
         def getip():
             ip = "None"
             try:
-                ip = urlopen(Request("https://api.ipify.org")).read().decode().strip()
+                ip = urlopen(Request("https://api.ipify.org"))
             except:
                 pass
             return ip
